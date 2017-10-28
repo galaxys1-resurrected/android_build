@@ -332,9 +332,9 @@ class EdifyGenerator(object):
     fstab = self.fstab
     if fstab:
       p = fstab[mount_point]
-      partition_type = common.PARTITION_TYPES[p.fs_type]
+      partition_type = "MTD" if p.fs_type == "mtd" else common.PARTITION_TYPES[p.fs_type]
       args = {'device': p.device, 'fn': fn}
-      if partition_type == "EMMC":
+      if partition_type == "EMMC" :
         if mapfn:
           args["map"] = mapfn
           self.script.append(
@@ -342,6 +342,8 @@ class EdifyGenerator(object):
         else:
           self.script.append(
               'package_extract_file("%(fn)s", "%(device)s");' % args)
+      elif partition_type == "MTD" :
+        pass
       else:
         raise ValueError(
             "don't know how to write \"%s\" partitions" % p.fs_type)
